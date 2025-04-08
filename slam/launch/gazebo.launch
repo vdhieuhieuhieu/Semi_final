@@ -1,0 +1,49 @@
+<launch>
+
+    <arg name="world" default="$(find tank_robot5)/urdf/mapper.world"/>
+
+  <!-- Mở môi trường trống trong Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world)" />
+        <arg name="paused" value="false" />
+        <arg name="use_sim_time" value="true" />
+        <arg name="gui" value="true" />
+    </include>
+
+  <!-- Load URDF model -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find slam)/urdf/slam.urdf'" />
+
+  <!-- Publish TF từ URDF -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Nếu mô phỏng -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <!-- Static transform giữa base_footprint và base_link -->
+  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher"
+        args="0 0 0 0 0 0 base_link base_footprint 40" />
+
+  <!-- Spawn robot trong Gazebo -->
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
+        args="-param robot_description -urdf -model slam"
+        output="screen" />
+
+  <!-- Publish /calibrated = true (tuỳ vào robot cần hay không) -->
+  <node name="fake_joint_calibration" pkg="rostopic" type="rostopic"
+        args="pub /calibrated std_msgs/Bool true" />
+
+  <!-- Chạy thuật toán SLAM Karto -->
+  <node pkg="slam_karto" type="slam_karto" name="slam_karto" output="screen">
+    <param name="odom_frame" value="odom"/>
+    <param name="map_frame" value="map"/>
+    <param name="base_frame" value="base_link"/>
+    <param name="use_scan_matching" value="true"/>
+    <param name="minimumTravelDistance" value="0.2"/>
+    <param name="minimumTravelHeading" value="0.1"/>
+    
+  </node>
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find slam)/launch/map.world.rviz" />
+        
+            <node name="controller" pkg="slam" type="controller.py" output="screen" />
+</launch>
+
