@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="world" default="$(find tank_robot5)/urdf/mapper.world"/>
+    <arg name="world" default="$(find slam)/urdf/mapper.world"/>
 
   <!-- Mở môi trường trống trong Gazebo -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
