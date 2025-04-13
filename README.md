@@ -1,4 +1,4 @@
-chay file roslaunch slam gazebo.launch 
+<chay file roslaunch slam gazebo.launch >
 
 cài 1 số thư viện của karto slam 
 sudo apt-get update
@@ -11,5 +11,5 @@ cài Pygame để mở cửa sổ điều khiển bánh xe
 
 sudo apt-get update
 pip3 install pygame
-
+để kiểm tra thuật toán karto có hoạt động hay không nhớ kiểm tra trong rviz topic /map có hoạt động bình thường không :>
 
